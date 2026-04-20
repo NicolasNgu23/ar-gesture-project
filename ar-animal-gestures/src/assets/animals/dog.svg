@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <!-- Corps -->
+  <ellipse cx="100" cy="125" rx="55" ry="48" fill="#C8894E"/>
+  <!-- Tête -->
+  <circle cx="100" cy="78" r="44" fill="#C8894E"/>
+  <!-- Oreilles tombantes -->
+  <ellipse cx="62" cy="75" rx="20" ry="32" fill="#A0673A" transform="rotate(-15 62 75)"/>
+  <ellipse cx="138" cy="75" rx="20" ry="32" fill="#A0673A" transform="rotate(15 138 75)"/>
+  <!-- Museau -->
+  <ellipse cx="100" cy="90" rx="22" ry="18" fill="#E8AA76"/>
+  <!-- Yeux -->
+  <circle cx="84" cy="72" r="10" fill="#4A2C0A"/>
+  <circle cx="116" cy="72" r="10" fill="#4A2C0A"/>
+  <circle cx="87" cy="69" r="3" fill="white"/>
+  <circle cx="119" cy="69" r="3" fill="white"/>
+  <!-- Nez -->
+  <ellipse cx="100" cy="84" rx="9" ry="7" fill="#2a1a0a"/>
+  <ellipse cx="98" cy="82" rx="3" ry="2" fill="#5a3a2a" opacity="0.5"/>
+  <!-- Bouche -->
+  <path d="M88 93 Q100 100 112 93" stroke="#8B5E3C" stroke-width="2" fill="none"/>
+  <!-- Langue -->
+  <ellipse cx="100" cy="99" rx="8" ry="6" fill="#FF6B8A"/>
+  <!-- Tache sur l'oeil -->
+  <ellipse cx="116" cy="70" rx="14" ry="13" fill="#A0673A" opacity="0.5"/>
+</svg>
