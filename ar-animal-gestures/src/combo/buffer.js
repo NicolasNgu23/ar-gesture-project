@@ -53,16 +53,16 @@ export class ComboBuffer {
     const key = seq.map(s => s.sign).join('+')
 
     const combos = {
-      'fist+fist':    { animal: 'cat',   emoji: '🐱', label: 'Chat',  description: 'Double poing' },
-      'fist+peace':   { animal: 'cat',   emoji: '🐱', label: 'Chat',  description: 'Poing puis V' },
-      'peace+peace':  { animal: 'dog',   emoji: '🐶', label: 'Chien', description: 'Double V' },
-      'peace+point':  { animal: 'dog',   emoji: '🐶', label: 'Chien', description: 'V puis index' },
-      'open+open':    { animal: 'koala', emoji: '🐨', label: 'Koala', description: 'Double main ouverte' },
-      'open+fist':    { animal: 'koala', emoji: '🐨', label: 'Koala', description: 'Main ouverte puis poing' },
-      'point+point':  { animal: 'panda', emoji: '🐼', label: 'Panda', description: 'Double index' },
-      'point+open':   { animal: 'panda', emoji: '🐼', label: 'Panda', description: 'Index puis main ouverte' },
-      'fist+open':    { animal: 'panda', emoji: '🐼', label: 'Panda', description: 'Poing + main ouverte' },
-      'point+peace':  { animal: 'koala', emoji: '🐨', label: 'Koala', description: 'Index + V' },
+      'fist+fist':   { key: 'fist+fist',   description: 'Double poing' },
+      'fist+peace':  { key: 'fist+peace',  description: 'Poing puis V' },
+      'peace+peace': { key: 'peace+peace', description: 'Double V' },
+      'peace+point': { key: 'peace+point', description: 'V puis index' },
+      'open+open':   { key: 'open+open',   description: 'Double main ouverte' },
+      'open+fist':   { key: 'open+fist',   description: 'Main ouverte puis poing' },
+      'point+point': { key: 'point+point', description: 'Double index' },
+      'point+open':  { key: 'point+open',  description: 'Index puis main ouverte' },
+      'fist+open':   { key: 'fist+open',   description: 'Poing + main ouverte' },
+      'point+peace': { key: 'point+peace', description: 'Index + V' },
     }
 
     return combos[key] || null

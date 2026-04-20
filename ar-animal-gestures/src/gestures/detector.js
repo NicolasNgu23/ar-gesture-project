@@ -12,7 +12,7 @@ export class HandDetector {
     })
 
     this.hands.setOptions({
-      maxNumHands: 1,
+      maxNumHands: 2,
       modelComplexity: 1,
       minDetectionConfidence: 0.75,
       minTrackingConfidence: 0.6

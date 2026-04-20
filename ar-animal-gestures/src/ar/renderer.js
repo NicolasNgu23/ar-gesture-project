@@ -3,24 +3,8 @@ export class ARRenderer {
     this.canvas = canvasElement
     this.ctx = canvasElement.getContext('2d')
     this.video = videoElement
-    this.animalImages = {}
-    this.activeAnimal = null
-    this.animDuration = 600
-    this.displayDuration = 3000
-    this.currentLandmarks = null
-    this._loadAnimals()
+    this.pendingLandmarks = []
     this._animLoop()
-  }
-
-  async _loadAnimals() {
-    const animals = ['cat', 'dog', 'koala', 'panda']
-    for (const name of animals) {
-      const img = new Image()
-      img.src = `/src/assets/animals/${name}.svg`
-      await new Promise(res => { img.onload = res; img.onerror = res })
-      this.animalImages[name] = img
-    }
-    console.log('[ARRenderer] Assets chargés')
   }
 
   resize() {
@@ -28,29 +12,12 @@ export class ARRenderer {
     this.canvas.height = this.video.videoHeight || 480
   }
 
-  showAnimal(animalKey, wristPosition) {
-    const img = this.animalImages[animalKey]
-    if (!img) return
-
-    const x = wristPosition ? wristPosition.x : this.canvas.width / 2
-    const y = wristPosition ? wristPosition.y - 80 : this.canvas.height / 2
-
-    this.activeAnimal = {
-      key: animalKey,
-      image: img,
-      x,
-      y,
-      alpha: 0,
-      scale: 0,
-      startTime: Date.now()
-    }
-  }
-
+  // Call once per frame with all detected hands
   drawLandmarks(landmarks) {
-    this.currentLandmarks = landmarks
+    this.pendingLandmarks.push(landmarks)
   }
 
-  _drawLandmarksInternal(landmarks) {
+  _drawHand(landmarks) {
     if (!landmarks) return
     const ctx = this.ctx
     const w = this.canvas.width
@@ -87,45 +54,11 @@ export class ARRenderer {
   _animLoop() {
     const loop = () => {
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
-      this._drawLandmarksInternal(this.currentLandmarks)
-
-      if (this.activeAnimal) {
-        const a = this.activeAnimal
-        const elapsed = Date.now() - a.startTime
-        const totalDuration = this.displayDuration + this.animDuration
-
-        if (elapsed > totalDuration) {
-          this.activeAnimal = null
-        } else {
-          const tIn = Math.min(elapsed / this.animDuration, 1)
-          const easeIn = 1 - Math.pow(1 - tIn, 3)
-
-          let alphaOut = 1
-          if (elapsed > this.displayDuration) {
-            alphaOut = 1 - (elapsed - this.displayDuration) / this.animDuration
-          }
-
-          a.alpha = easeIn * alphaOut
-          a.scale = easeIn * 1.1 - (easeIn > 0.8 ? (easeIn - 0.8) * 0.5 : 0)
-
-          this.ctx.save()
-          this.ctx.globalAlpha = Math.max(0, a.alpha)
-          const size = 120 * a.scale
-          this.ctx.drawImage(a.image, a.x - size / 2, a.y - size / 2, size, size)
-          this.ctx.restore()
-        }
-      }
-
+      // Draw all hands queued this frame, then clear for next frame
+      this.pendingLandmarks.forEach(lm => this._drawHand(lm))
+      this.pendingLandmarks = []
       requestAnimationFrame(loop)
     }
     requestAnimationFrame(loop)
-  }
-
-  getWristPosition(landmarks) {
-    if (!landmarks?.[0]) return null
-    return {
-      x: landmarks[0].x * this.canvas.width,
-      y: landmarks[0].y * this.canvas.height
-    }
   }
 }

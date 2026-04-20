@@ -20,19 +20,19 @@ export function classifySign(landmarks) {
   const pinky = isFingerUp(lm, 20, 17)
 
   if (!index && !middle && !ring && !pinky) {
-    return { sign: 'fist', label: '✊', animal: 'cat', confidence: 0.9 }
+    return { sign: 'fist', label: '✊', confidence: 0.9 }
   }
 
   if (index && middle && !ring && !pinky) {
-    return { sign: 'peace', label: '✌️', animal: 'dog', confidence: 0.9 }
+    return { sign: 'peace', label: '✌️', confidence: 0.9 }
   }
 
   if (index && middle && ring && pinky) {
-    return { sign: 'open', label: '🖐', animal: 'koala', confidence: 0.85 }
+    return { sign: 'open', label: '🖐', confidence: 0.85 }
   }
 
   if (index && !middle && !ring && !pinky) {
-    return { sign: 'point', label: '☝️', animal: 'panda', confidence: 0.88 }
+    return { sign: 'point', label: '☝️', confidence: 0.88 }
   }
 
   return null
@@ -74,18 +74,4 @@ export class SignSmoother {
     this.buffer = []
     this.lastStableSign = null
   }
-}
-
-export const ANIMAL_EMOJI = {
-  cat: '🐱',
-  dog: '🐶',
-  koala: '🐨',
-  panda: '🐼'
-}
-
-export const ANIMAL_LABEL = {
-  cat: 'Chat',
-  dog: 'Chien',
-  koala: 'Koala',
-  panda: 'Panda'
 }
