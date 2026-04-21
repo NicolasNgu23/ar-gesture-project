@@ -4,12 +4,12 @@ import { ThreeARLayer } from './ar/three-layer.js'
 import { classifySign, SignSmoother } from './gestures/signs.js'
 import { RaceLane, SIGN_LABELS, formatTime } from './game/race.js'
 
-const video = document.getElementById('webcam')
-const canvas = document.getElementById('overlay')
-const camDot = document.getElementById('cam-dot')
-const camLabel = document.getElementById('cam-label')
+const video        = document.getElementById('webcam')
+const canvas       = document.getElementById('overlay')
+const camDot       = document.getElementById('cam-dot')
+const camLabel     = document.getElementById('cam-label')
 
-const renderer = new ARRenderer(canvas, video)
+const renderer   = new ARRenderer(canvas, video)
 const threeLayer = new ThreeARLayer(document.getElementById('three-canvas'), video)
 
 const lane1 = new RaceLane({ totalSigns: 20 })
@@ -22,30 +22,31 @@ let gameReady = false
 let solo = false
 let latestFaces = []
 
-const horse1 = document.getElementById('horse-1')
-const horse2 = document.getElementById('horse-2')
-const timer1 = document.getElementById('timer-1')
-const timer2 = document.getElementById('timer-2')
-const queue1 = document.getElementById('queue-1')
-const queue2 = document.getElementById('queue-2')
-const status1 = document.getElementById('status-1')
-const status2 = document.getElementById('status-2')
-const laneP2 = document.getElementById('lane-p2')
+// DOM refs
+const horse1      = document.getElementById('horse-1')
+const horse2      = document.getElementById('horse-2')
+const timer1      = document.getElementById('timer-1')
+const timer2      = document.getElementById('timer-2')
+const queue1      = document.getElementById('queue-1')
+const queue2      = document.getElementById('queue-2')
+const status1     = document.getElementById('status-1')
+const status2     = document.getElementById('status-2')
+const laneP2      = document.getElementById('lane-p2')
 const laneDivider = document.querySelector('.lane-divider')
-const winnerBanner = document.getElementById('winner-banner')
-const winnerText = document.getElementById('winner-text')
-const loserText = document.getElementById('loser-text')
+const winnerBanner  = document.getElementById('winner-banner')
+const winnerText    = document.getElementById('winner-text')
+const loserText     = document.getElementById('loser-text')
 const resultCamSlot = document.getElementById('result-cam-slot')
-const webcamArea = document.getElementById('webcam-area')
-const camContainer = document.getElementById('camera-container')
-const webcamInfo = document.getElementById('webcam-info')
-const restartBtn = document.getElementById('restart-btn')
-const modeScreen = document.getElementById('mode-screen')
-const buzzerOverlay = document.getElementById('buzzer-overlay')
-const buzzerBtn = document.getElementById('buzzer-btn')
-const charPickers = document.getElementById('char-pickers')
+const webcamArea    = document.getElementById('webcam-area')
+const camContainer  = document.getElementById('camera-container')
+const webcamInfo    = document.getElementById('webcam-info')
+const restartBtn    = document.getElementById('restart-btn')
+const modeScreen       = document.getElementById('mode-screen')
+const buzzerOverlay    = document.getElementById('buzzer-overlay')
+const buzzerBtn        = document.getElementById('buzzer-btn')
+const charPickers      = document.getElementById('char-pickers')
 const countdownOverlay = document.getElementById('countdown-overlay')
-const countdownNumber = document.getElementById('countdown-number')
+const countdownNumber  = document.getElementById('countdown-number')
 
 const CHARACTERS = ['🏎️','🏇','🚶','🐢','🚀','🦘','🐌','🚲']
 let selectedChars = ['🏇', '🏇']
@@ -251,6 +252,7 @@ const detector = new HandDetector({
 
     updateCrown()
 
+    // Only process if a mode has been chosen
     if (modeScreen.classList.contains('hidden')) {
       const hand = solo ? (lm1 || lm2) : lm1
       handleSign(lane1, smoother1, status1, horse1, document.getElementById('lane-p1'), queue1, 'Joueur 1', hand ? classifySign(hand) : null)
