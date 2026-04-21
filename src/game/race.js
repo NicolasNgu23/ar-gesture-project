@@ -3,9 +3,11 @@ const SIGNS = ['fist', 'peace', 'open', 'point']
 export const SIGN_LABELS = { fist: '✊', peace: '✌️', open: '🖐', point: '☝️' }
 
 export class RaceLane {
-  constructor({ totalSigns = 20, sequenceVisible = 5 } = {}) {
+  constructor({ totalSigns = 20, sequenceVisible = 5, penaltyThreshold = 3, penaltyAmount = 2 } = {}) {
     this.totalSigns = totalSigns
     this.sequenceVisible = sequenceVisible
+    this.penaltyThreshold = penaltyThreshold
+    this.penaltyAmount = penaltyAmount
     this.sequence = this._generate(totalSigns + sequenceVisible + 10)
     this.currentIndex = 0
     this.startTime = null
@@ -49,9 +51,9 @@ export class RaceLane {
 
     if (sign !== this.currentSign) {
       this.missStreak++
-      const penalty = this.missStreak >= 3
+      const penalty = this.missStreak >= this.penaltyThreshold
       if (penalty) {
-        this.currentIndex = Math.max(0, this.currentIndex - 2)
+        this.currentIndex = Math.max(0, this.currentIndex - this.penaltyAmount)
         this.missStreak = 0
       }
       return { correct: false, penalty }

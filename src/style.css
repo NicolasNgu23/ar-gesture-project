@@ -26,6 +26,26 @@ body {
   width: 100vw;
 }
 
+/* ── Race header ────────────────────────────────────────── */
+#race-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  margin-bottom: 4px;
+}
+
+#circuit-badge {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--muted);
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+#circuit-badge.visible { opacity: 1; }
+
 /* ── Best score ─────────────────────────────────────────── */
 #best-score-row {
   text-align: center;
@@ -146,6 +166,7 @@ body {
   border-radius: 26px;
   border: 1px solid rgba(255,255,255,0.06);
   overflow: hidden;
+  transition: background 0.4s, box-shadow 0.4s;
 }
 
 .track-bg {
@@ -171,7 +192,74 @@ body {
     transparent 6px, transparent 12px
   );
   opacity: 0.2;
+  transition: background 0.4s, opacity 0.4s;
 }
+
+/* ── Circuit Prairie (easy) ─────────────────────────────── */
+.track--easy {
+  background: #091509;
+  border-color: rgba(76,175,80,0.15);
+}
+.track--easy .track-bg {
+  background: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent 48px,
+    rgba(76,175,80,0.1) 48px,
+    rgba(76,175,80,0.1) 50px
+  );
+}
+.track--easy .finish-line {
+  background: repeating-linear-gradient(
+    180deg,
+    #66bb6a 0, #66bb6a 6px,
+    transparent 6px, transparent 12px
+  );
+  opacity: 0.55;
+}
+#lane-p1 .track--easy { box-shadow: 0 0 0 1px rgba(76,175,80,0.2), inset 0 1px 0 rgba(76,175,80,0.06); }
+#lane-p2 .track--easy { box-shadow: 0 0 0 1px rgba(76,175,80,0.2), inset 0 1px 0 rgba(76,175,80,0.06); }
+
+/* ── Circuit Espace (hard) ──────────────────────────────── */
+.track--hard {
+  background: #060012;
+  border-color: rgba(180,100,255,0.15);
+}
+.track--hard .track-bg {
+  background: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent 48px,
+    rgba(180,100,255,0.12) 48px,
+    rgba(180,100,255,0.12) 50px
+  );
+}
+.track--hard .track-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle, rgba(255,255,255,0.75) 1px, transparent 1px),
+    radial-gradient(circle, rgba(255,255,255,0.5)  1px, transparent 1px),
+    radial-gradient(circle, rgba(200,160,255,0.6)  1px, transparent 1px),
+    radial-gradient(circle, rgba(255,255,255,0.4)  1px, transparent 1px);
+  background-size: 90px 28px, 130px 52px, 70px 38px, 110px 20px;
+  background-position: 12px 8px, 45px 18px, 75px 6px, 30px 24px;
+  animation: starscroll 4s linear infinite;
+}
+@keyframes starscroll {
+  to { background-position: -78px 8px, -85px 18px, -55px 6px, -80px 24px; }
+}
+.track--hard .finish-line {
+  background: repeating-linear-gradient(
+    180deg,
+    #ce93d8 0, #ce93d8 6px,
+    transparent 6px, transparent 12px
+  );
+  opacity: 0.65;
+}
+#lane-p1 .track--hard { box-shadow: 0 0 0 1px rgba(180,100,255,0.2), inset 0 1px 0 rgba(180,100,255,0.06); }
+#lane-p2 .track--hard { box-shadow: 0 0 0 1px rgba(180,100,255,0.2), inset 0 1px 0 rgba(180,100,255,0.06); }
 
 #lane-p1 .track { box-shadow: 0 0 0 1px rgba(0,212,255,0.12), inset 0 1px 0 rgba(0,212,255,0.04); }
 #lane-p2 .track { box-shadow: 0 0 0 1px rgba(255,107,53,0.12), inset 0 1px 0 rgba(255,107,53,0.04); }
@@ -451,7 +539,7 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 40px;
+  gap: 32px;
   background: rgba(0,0,0,0.88);
   backdrop-filter: blur(16px);
   z-index: 90;
@@ -466,6 +554,61 @@ body {
   letter-spacing: 1px;
 }
 
+.screen-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.section-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* Difficulty cards */
+.diff-cards { display: flex; gap: 14px; }
+
+.diff-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  background: rgba(255,255,255,0.05);
+  border: 2px solid rgba(255,255,255,0.1);
+  color: var(--text);
+  padding: 16px 28px;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, transform 0.15s;
+  min-width: 110px;
+}
+
+.diff-card:hover { background: rgba(255,255,255,0.1); transform: translateY(-2px); }
+
+.diff-card[data-diff="easy"].active   { border-color: #66bb6a; background: rgba(76,175,80,0.12); }
+.diff-card[data-diff="normal"].active { border-color: rgba(255,255,255,0.5); background: rgba(255,255,255,0.1); }
+.diff-card[data-diff="hard"].active   { border-color: #ce93d8; background: rgba(180,100,255,0.12); }
+
+.diff-icon { font-size: 30px; line-height: 1; }
+.diff-name { font-size: 15px; font-weight: 700; letter-spacing: 0.5px; margin-top: 2px; }
+.diff-meta { font-size: 11px; color: var(--muted); }
+.diff-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  opacity: 0.5;
+}
+
+.diff-card[data-diff="easy"].active   .diff-label { color: #66bb6a; opacity: 1; }
+.diff-card[data-diff="normal"].active .diff-label { color: #fff; opacity: 0.7; }
+.diff-card[data-diff="hard"].active   .diff-label { color: #ce93d8; opacity: 1; }
+
+/* Mode buttons */
 .mode-buttons { display: flex; gap: 20px; }
 
 .mode-btn {

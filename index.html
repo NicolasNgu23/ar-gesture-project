@@ -17,7 +17,10 @@
 
     <div id="race-area">
 
-      <div id="best-score-row">Meilleur Score : <span id="best-score-display">--.-s</span></div>
+      <div id="race-header">
+        <div id="circuit-badge"></div>
+        <div id="best-score-row">Meilleur Score : <span id="best-score-display">--.-s</span></div>
+      </div>
 
       <!-- Lane 1 -->
       <div class="lane" id="lane-p1">
@@ -90,9 +93,37 @@
 
     <div id="mode-screen">
       <h1>Gesture Race</h1>
-      <div class="mode-buttons">
-        <button class="mode-btn" id="btn-solo">Solo</button>
-        <button class="mode-btn" id="btn-duo">2 Joueurs</button>
+
+      <div class="screen-section">
+        <h2 class="section-title">Circuit</h2>
+        <div class="diff-cards">
+          <button class="diff-card" data-diff="easy">
+            <span class="diff-icon">🌿</span>
+            <span class="diff-name">Prairie</span>
+            <span class="diff-meta">12 gestes</span>
+            <span class="diff-label">Facile</span>
+          </button>
+          <button class="diff-card active" data-diff="normal">
+            <span class="diff-icon">🏙️</span>
+            <span class="diff-name">Urbain</span>
+            <span class="diff-meta">20 gestes</span>
+            <span class="diff-label">Normal</span>
+          </button>
+          <button class="diff-card" data-diff="hard">
+            <span class="diff-icon">🚀</span>
+            <span class="diff-name">Espace</span>
+            <span class="diff-meta">35 gestes</span>
+            <span class="diff-label">Difficile</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="screen-section">
+        <h2 class="section-title">Mode</h2>
+        <div class="mode-buttons">
+          <button class="mode-btn" id="btn-solo">Solo</button>
+          <button class="mode-btn" id="btn-duo">2 Joueurs</button>
+        </div>
       </div>
     </div>
 

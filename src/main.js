@@ -4,6 +4,9 @@ import { ARRenderer } from './ar/renderer.js'
 import { ThreeARLayer } from './ar/three-layer.js'
 import { classifySign, SignSmoother } from './gestures/signs.js'
 import { RaceLane, SIGN_LABELS, formatTime, formatTimeSeconds } from './game/race.js'
+import { GameMusic } from './audio/music.js'
+
+const music = new GameMusic()
 
 const video = document.getElementById('webcam')
 const canvas = document.getElementById('overlay')
@@ -12,6 +15,14 @@ const camLabel = document.getElementById('cam-label')
 
 const renderer = new ARRenderer(canvas, video)
 const threeLayer = new ThreeARLayer(document.getElementById('three-canvas'), video)
+
+const DIFFICULTY_CONFIG = {
+  easy:   { totalSigns: 12, sequenceVisible: 5, penaltyThreshold: 4, penaltyAmount: 1, theme: 'easy',   badge: '🌿 Circuit Prairie · Facile · 12 gestes' },
+  normal: { totalSigns: 20, sequenceVisible: 5, penaltyThreshold: 3, penaltyAmount: 2, theme: 'normal', badge: '🏙️ Circuit Urbain · Normal · 20 gestes'   },
+  hard:   { totalSigns: 35, sequenceVisible: 3, penaltyThreshold: 2, penaltyAmount: 3, theme: 'hard',   badge: '🚀 Circuit Espace · Difficile · 35 gestes' },
+}
+
+let currentDifficulty = 'normal'
 
 const lane1 = new RaceLane({ totalSigns: 20 })
 const lane2 = new RaceLane({ totalSigns: 20 })
@@ -124,11 +135,38 @@ function buildCharPickers() {
   })
 }
 
+// ── Difficulty selection ─────────────────────────────────
+const circuitBadge = document.getElementById('circuit-badge')
+
+document.querySelectorAll('.diff-card').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.diff-card').forEach(b => b.classList.remove('active'))
+    btn.classList.add('active')
+    currentDifficulty = btn.dataset.diff
+  })
+})
+
+function applyDifficultyToLanes() {
+  const cfg = DIFFICULTY_CONFIG[currentDifficulty]
+  ;[lane1, lane2].forEach(lane => {
+    lane.totalSigns       = cfg.totalSigns
+    lane.sequenceVisible  = cfg.sequenceVisible
+    lane.penaltyThreshold = cfg.penaltyThreshold
+    lane.penaltyAmount    = cfg.penaltyAmount
+  })
+  const themeClass = `track track--${cfg.theme}`
+  document.getElementById('track-1').className = themeClass
+  document.getElementById('track-2').className = themeClass
+  circuitBadge.textContent = cfg.badge
+  circuitBadge.classList.add('visible')
+}
+
 // ── Mode selection ───────────────────────────────────────
 document.getElementById('btn-solo').addEventListener('click', () => startGame(true))
 document.getElementById('btn-duo').addEventListener('click',  () => startGame(false))
 
 function startGame(isSolo) {
+  applyDifficultyToLanes()
   solo = isSolo
   laneP2.style.display      = solo ? 'none' : ''
   laneDivider.style.display = solo ? 'none' : ''
@@ -196,6 +234,7 @@ function runCountdown() {
       setTimeout(() => {
         countdownOverlay.classList.remove('active')
         gameReady = true
+        music.start()
       }, 900)
     }
   }
@@ -262,7 +301,7 @@ async function handleSign(lane, smoother, statusEl, horseEl, laneEl, queueEl, pl
       statusEl.textContent = `✅ ${stable.label}`
     } else {
       statusEl.textContent = penalty
-        ? `💥 -2 cases ! (attendu : ${SIGN_LABELS[lane.currentSign]})`
+        ? `💥 -${lane.penaltyAmount} cases ! (attendu : ${SIGN_LABELS[lane.currentSign]})`
         : `❌ ${stable.label} (attendu : ${SIGN_LABELS[lane.currentSign]})`
     }
 
@@ -271,6 +310,7 @@ async function handleSign(lane, smoother, statusEl, horseEl, laneEl, queueEl, pl
 
     if (lane.finished && !gameOver) {
       gameOver = true
+      music.stop()
       const playerName = getPlayerName(playerIdx)
       let isNewRecord = false
 
@@ -350,6 +390,7 @@ renderQueue(queue1, lane1)
 renderQueue(queue2, lane2)
 
 restartBtn.addEventListener('click', () => {
+  music.stop()
   gameReady = false
   webcamArea.insertBefore(camContainer, webcamInfo)
   winnerBanner.classList.remove('visible')
