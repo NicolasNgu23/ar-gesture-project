@@ -12,7 +12,6 @@ export class RaceLane {
     this.endTime = null
     this.finished = false
     this.missStreak = 0
-    this.hitStreak = 0
   }
 
   _generate(length) {
@@ -45,26 +44,21 @@ export class RaceLane {
     return (this.endTime || Date.now()) - this.startTime
   }
 
-  // Returns { correct, penalty, boost }
   checkSign(sign) {
-    if (this.finished) return { correct: false, penalty: false, boost: false }
+    if (this.finished) return { correct: false, penalty: false }
 
     if (sign !== this.currentSign) {
-      // Wrong sign
-      this.hitStreak = 0
       this.missStreak++
       const penalty = this.missStreak >= 3
       if (penalty) {
         this.currentIndex = Math.max(0, this.currentIndex - 2)
         this.missStreak = 0
       }
-      return { correct: false, penalty, boost: false }
+      return { correct: false, penalty }
     }
 
-    // Correct sign
     if (!this.startTime) this.startTime = Date.now()
     this.missStreak = 0
-    this.hitStreak++
     this.currentIndex++
 
     if (this.currentIndex >= this.totalSigns) {
@@ -72,7 +66,7 @@ export class RaceLane {
       this.endTime = Date.now()
     }
 
-    return { correct: true, penalty: false, boost: false }
+    return { correct: true, penalty: false }
   }
 
   reset() {
@@ -82,7 +76,6 @@ export class RaceLane {
     this.endTime = null
     this.finished = false
     this.missStreak = 0
-    this.hitStreak = 0
   }
 }
 
