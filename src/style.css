@@ -100,6 +100,27 @@ body {
   justify-content: space-between;
 }
 
+.player-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.player-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255,255,255,0.15);
+  display: none;
+  flex-shrink: 0;
+}
+
+.player-avatar[src]:not([src=""]) { display: block; }
+
+#lane-p1 .player-avatar { border-color: var(--p1); }
+#lane-p2 .player-avatar { border-color: var(--p2); }
+
 .player-label {
   font-size: 13px;
   font-weight: 700;

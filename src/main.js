@@ -140,8 +140,41 @@ function startGame(isSolo) {
   buzzerOverlay.classList.add('active')
 }
 
+// ── Avatar capture ───────────────────────────────────────
+function captureAvatar(half = 'full') {
+  const size = 80
+  const c = document.createElement('canvas')
+  c.width = size; c.height = size
+  const ctx = c.getContext('2d')
+  ctx.translate(size, 0)
+  ctx.scale(-1, 1)
+
+  const vw = video.videoWidth || video.clientWidth
+  const vh = video.videoHeight || video.clientHeight
+
+  if (half === 'full') {
+    const sq = Math.min(vw, vh)
+    ctx.drawImage(video, (vw - sq) / 2, (vh - sq) / 2, sq, sq, 0, 0, size, size)
+  } else {
+    // P1 est à gauche à l'écran (droite du flux brut), P2 à droite (gauche du flux brut)
+    const hw = vw / 2
+    const sy = Math.max(0, (vh - hw) / 2)
+    const sh = Math.min(hw, vh)
+    const sx = half === 'p1' ? hw : 0
+    ctx.drawImage(video, sx, sy, hw, sh, 0, 0, size, size)
+  }
+
+  return c.toDataURL('image/jpeg', 0.85)
+}
+
 // ── Buzzer + countdown ───────────────────────────────────
 buzzerBtn.addEventListener('click', () => {
+  if (solo) {
+    document.getElementById('avatar-p1').src = captureAvatar('full')
+  } else {
+    document.getElementById('avatar-p1').src = captureAvatar('p1')
+    document.getElementById('avatar-p2').src = captureAvatar('p2')
+  }
   buzzerOverlay.classList.remove('active')
   runCountdown()
 })
