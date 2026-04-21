@@ -86,3 +86,10 @@ export function formatTime(ms) {
   const minutes = Math.floor(total / 600)
   return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}.${deciseconds}`
 }
+
+export function formatTimeSeconds(ms) {
+  const total = Math.floor(ms / 100)
+  const deciseconds = total % 10
+  const seconds = Math.floor(total / 10)
+  return `${seconds}.${deciseconds}s`
+}

@@ -2,7 +2,7 @@ import { HandDetector } from './gestures/detector.js'
 import { ARRenderer } from './ar/renderer.js'
 import { ThreeARLayer } from './ar/three-layer.js'
 import { classifySign, SignSmoother } from './gestures/signs.js'
-import { RaceLane, SIGN_LABELS, formatTime } from './game/race.js'
+import { RaceLane, SIGN_LABELS, formatTime, formatTimeSeconds } from './game/race.js'
 
 const video = document.getElementById('webcam')
 const canvas = document.getElementById('overlay')
@@ -46,6 +46,33 @@ const buzzerBtn = document.getElementById('buzzer-btn')
 const charPickers = document.getElementById('char-pickers')
 const countdownOverlay = document.getElementById('countdown-overlay')
 const countdownNumber = document.getElementById('countdown-number')
+
+// ── Best score (localStorage) ────────────────────────────
+const BEST_SCORE_KEY = 'gestureRace_bestScore'
+
+function getBestScore() {
+  const val = localStorage.getItem(BEST_SCORE_KEY)
+  return val !== null ? parseInt(val, 10) : null
+}
+
+function setBestScore(ms) {
+  localStorage.setItem(BEST_SCORE_KEY, String(ms))
+}
+
+function updateBestScoreDisplays(newRecord = false) {
+  const best = getBestScore()
+  const text = best !== null ? formatTimeSeconds(best) : '--.-s'
+  document.getElementById('best-score-display').textContent = text
+  const resultEl = document.getElementById('result-best-score')
+  document.getElementById('result-best-score-display').textContent = text
+  if (newRecord) {
+    resultEl.classList.add('new-record')
+  } else {
+    resultEl.classList.remove('new-record')
+  }
+}
+
+updateBestScoreDisplays()
 
 const CHARACTERS = ['🏎️','🏇','🚶','🐢','🚀','🦘','🐌','🚲']
 let selectedChars = ['🏇', '🏇']
@@ -201,6 +228,10 @@ function handleSign(lane, smoother, statusEl, horseEl, laneEl, queueEl, playerNa
 
     if (lane.finished && !gameOver) {
       gameOver = true
+      const prevBest = getBestScore()
+      const isNewRecord = prevBest === null || lane.elapsed < prevBest
+      if (isNewRecord) setBestScore(lane.elapsed)
+      updateBestScoreDisplays(isNewRecord)
       if (solo) {
         winnerText.textContent = `🏆 Terminé ! — ${formatTime(lane.elapsed)}`
         loserText.textContent  = ''
