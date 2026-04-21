@@ -1,3 +1,4 @@
+import { fetchGlobalBest, saveGlobalBest } from './supabase.js'
 import { HandDetector } from './gestures/detector.js'
 import { ARRenderer } from './ar/renderer.js'
 import { ThreeARLayer } from './ar/three-layer.js'
@@ -46,41 +47,50 @@ const buzzerBtn = document.getElementById('buzzer-btn')
 const charPickers = document.getElementById('char-pickers')
 const countdownOverlay = document.getElementById('countdown-overlay')
 const countdownNumber = document.getElementById('countdown-number')
+const nameP1 = document.getElementById('name-p1')
+const nameP2 = document.getElementById('name-p2')
 
-// ── Best score (localStorage) ────────────────────────────
-const BEST_SCORE_KEY = 'gestureRace_bestScore'
-
-function getBestScore() {
-  const val = localStorage.getItem(BEST_SCORE_KEY)
-  return val !== null ? parseInt(val, 10) : null
+// ── Player names (editable labels) ──────────────────────
+function getPlayerName(idx) {
+  const el = idx === 0 ? nameP1 : nameP2
+  return el.textContent.trim() || `Joueur ${idx + 1}`
 }
 
-function setBestScore(ms) {
-  localStorage.setItem(BEST_SCORE_KEY, String(ms))
-}
+// Prevent newlines in contenteditable
+;[nameP1, nameP2].forEach(el => {
+  el.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); el.blur() }
+  })
+})
+
+// ── Best score (Supabase) ────────────────────────────────
+let globalBest = { ms: null, username: null }
 
 function updateBestScoreDisplays(newRecord = false) {
-  const best = getBestScore()
-  const text = best !== null ? formatTimeSeconds(best) : '--.-s'
+  const time = globalBest.ms !== null ? formatTimeSeconds(globalBest.ms) : '--.-s'
+  const text = globalBest.username ? `${time} · ${globalBest.username}` : time
   document.getElementById('best-score-display').textContent = text
-  const resultEl = document.getElementById('result-best-score')
   document.getElementById('result-best-score-display').textContent = text
-  if (newRecord) {
-    resultEl.classList.add('new-record')
-  } else {
-    resultEl.classList.remove('new-record')
+  document.getElementById('result-best-score').classList.toggle('new-record', newRecord)
+}
+
+async function loadGlobalBest() {
+  const data = await fetchGlobalBest()
+  if (data) {
+    globalBest = { ms: data.score_ms, username: data.username }
+    updateBestScoreDisplays(false)
   }
 }
 
-updateBestScoreDisplays()
+loadGlobalBest()
 
+// ── Characters ───────────────────────────────────────────
 const CHARACTERS = ['🏎️','🏇','🚶','🐢','🚀','🦘','🐌','🚲']
 let selectedChars = ['🏇', '🏇']
 
 function buildCharPickers() {
   charPickers.innerHTML = ''
   const players = solo ? [0] : [0, 1]
-  const labels  = ['Joueur 1', 'Joueur 2']
   const colors  = ['var(--p1)', 'var(--p2)']
 
   players.forEach(idx => {
@@ -89,7 +99,7 @@ function buildCharPickers() {
 
     const label = document.createElement('div')
     label.className = 'char-picker-label'
-    label.textContent = labels[idx]
+    label.textContent = getPlayerName(idx)
     label.style.color = colors[idx]
 
     const opts = document.createElement('div')
@@ -201,7 +211,7 @@ function tick() {
 }
 requestAnimationFrame(tick)
 
-function handleSign(lane, smoother, statusEl, horseEl, laneEl, queueEl, playerName, raw) {
+async function handleSign(lane, smoother, statusEl, horseEl, laneEl, queueEl, playerIdx, raw) {
   if (!gameReady || gameOver) return
   const stable = smoother.update(raw)
 
@@ -228,18 +238,25 @@ function handleSign(lane, smoother, statusEl, horseEl, laneEl, queueEl, playerNa
 
     if (lane.finished && !gameOver) {
       gameOver = true
-      const prevBest = getBestScore()
-      const isNewRecord = prevBest === null || lane.elapsed < prevBest
-      if (isNewRecord) setBestScore(lane.elapsed)
+      const playerName = getPlayerName(playerIdx)
+      let isNewRecord = false
+
+      if (globalBest.ms === null || lane.elapsed < globalBest.ms) {
+        globalBest = { ms: lane.elapsed, username: playerName }
+        isNewRecord = true
+        saveGlobalBest(playerName, lane.elapsed)
+      }
+
       updateBestScoreDisplays(isNewRecord)
+
       if (solo) {
         winnerText.textContent = `🏆 Terminé ! — ${formatTime(lane.elapsed)}`
         loserText.textContent  = ''
       } else {
+        const loserIdx  = lane === lane1 ? 1 : 0
         const loserLane = lane === lane1 ? lane2 : lane1
-        const loserName = lane === lane1 ? 'Joueur 2' : 'Joueur 1'
         winnerText.textContent = `🏆 ${playerName} gagne ! — ${formatTime(lane.elapsed)}`
-        loserText.textContent  = `${loserName} — ${loserLane.currentIndex} / ${loserLane.totalSigns} gestes`
+        loserText.textContent  = `${getPlayerName(loserIdx)} — ${loserLane.currentIndex} / ${loserLane.totalSigns} gestes`
       }
       resultCamSlot.appendChild(camContainer)
       winnerBanner.classList.add('visible')
@@ -284,9 +301,9 @@ const detector = new HandDetector({
 
     if (modeScreen.classList.contains('hidden')) {
       const hand = solo ? (lm1 || lm2) : lm1
-      handleSign(lane1, smoother1, status1, horse1, document.getElementById('lane-p1'), queue1, 'Joueur 1', hand ? classifySign(hand) : null)
+      handleSign(lane1, smoother1, status1, horse1, document.getElementById('lane-p1'), queue1, 0, hand ? classifySign(hand) : null)
       if (!solo) {
-        handleSign(lane2, smoother2, status2, horse2, document.getElementById('lane-p2'), queue2, 'Joueur 2', lm2 ? classifySign(lm2) : null)
+        handleSign(lane2, smoother2, status2, horse2, document.getElementById('lane-p2'), queue2, 1, lm2 ? classifySign(lm2) : null)
       }
     }
   },

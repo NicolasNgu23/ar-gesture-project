@@ -526,6 +526,18 @@ body {
 #restart-btn:hover { background: rgba(255,255,255,0.18); transform: scale(1.04); }
 #restart-btn:active { transform: scale(0.97); }
 
+/* ── Editable player labels ──────────────────────────────── */
+.player-label[contenteditable] {
+  cursor: text;
+  border-radius: 4px;
+  padding: 1px 4px;
+  outline: none;
+  transition: background 0.15s;
+  min-width: 20px;
+}
+.player-label[contenteditable]:hover { background: rgba(255,255,255,0.07); }
+.player-label[contenteditable]:focus { background: rgba(255,255,255,0.1); }
+
 /* ── Responsive ─────────────────────────────────────────── */
 @media (max-width: 600px) {
   #webcam-area { height: 120px; }

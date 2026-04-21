@@ -17,12 +17,12 @@
 
     <div id="race-area">
 
-      <div id="best-score-row">Meilleur Score : <span id="best-score-display">--:--.-</span></div>
+      <div id="best-score-row">Meilleur Score : <span id="best-score-display">--.-s</span></div>
 
       <!-- Lane 1 -->
       <div class="lane" id="lane-p1">
         <div class="lane-header">
-          <span class="player-label p1">Joueur 1</span>
+          <span class="player-label p1" id="name-p1" contenteditable="true" spellcheck="false">Joueur 1</span>
           <span class="timer" id="timer-1">00:00.0</span>
         </div>
         <div class="track" id="track-1">
@@ -41,7 +41,7 @@
       <!-- Lane 2 -->
       <div class="lane" id="lane-p2">
         <div class="lane-header">
-          <span class="player-label p2">Joueur 2</span>
+          <span class="player-label p2" id="name-p2" contenteditable="true" spellcheck="false">Joueur 2</span>
           <span class="timer" id="timer-2">00:00.0</span>
         </div>
         <div class="track" id="track-2">
@@ -94,7 +94,7 @@
       <div id="winner-text"></div>
       <div id="result-cam-slot"></div>
       <div id="loser-text"></div>
-      <div id="result-best-score">Meilleur Score : <span id="result-best-score-display">--:--.-</span></div>
+      <div id="result-best-score">Meilleur Score : <span id="result-best-score-display">--.-s</span></div>
       <button id="restart-btn">Rejouer</button>
     </div>
 
